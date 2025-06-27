@@ -1,0 +1,72 @@
+## Ignore Visual Studio temporary files, build results, and user-specific files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Ignore build results
+bin/
+obj/
+[Bb]uild/
+[Ll]ogs/
+*.log
+
+## Ignore test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Ignore publish output
+publish/
+out/
+
+## Ignore secrets and configs
+secrets.json
+appsettings.Development.json
+
+## Ignore others
+*.ncrunch*
+*.localhistory
+*.DS_Store
+*.orig
+*.sdf
+*.dbmdl
+*.bak
+*.backup
+*.tmp
+*.temp
+*.cache
+
+# Rider (JetBrains)
+.idea/
+*.sln.iml
+
+# Node/npm (if frontend is integrated)
+node_modules/
+dist/
+.env
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# NuGet packages
+*.nupkg
+packages/
+*.snupkg
+
+# Entity Framework
+Migrations/
+
+# OS-specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Git conflict files
+*.swp
+*.rej
+*.merge
