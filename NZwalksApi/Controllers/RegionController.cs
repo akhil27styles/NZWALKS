@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NZWalks.API.Repositories;
+using NZwalksApi.Repositories;
 using NZwalksApi.Data;
 using NZwalksApi.Models.Domain;
 using NZwalksApi.Models.DTO;
