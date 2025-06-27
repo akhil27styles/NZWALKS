@@ -1,21 +1,26 @@
-﻿using NZWalks.API.Models.Domain;
+﻿using NZwalksApi.Models.Domain;
+using NZwalksApi.Repositories;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace NZWalks.API.Repositories
 {
-    public class InMemoryRegionRepository : IRegionRepository
+    public class InMemoryRegionRepository 
     {
         public Task<List<Region>> GetAllAsync()
         {
-            return List<Region>
-             {
-                new Region()
+            var regions = new List<Region>
+            {
+                new Region
                 {
                     Id = Guid.NewGuid(),
-                    Code = "Sam",
-                    Name = "Samoa",
+                    Code = "SAM",
+                    Name = "Samoa"
                 }
-            }
+            };
+
+            return Task.FromResult(regions);
         }
-    } 
- 
+    }
 }
