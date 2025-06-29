@@ -22,6 +22,7 @@ builder.Services.AddDbContext<NZWalksDbContext>(options =>
 
 // Fix for CS0311: Ensure SQLRegionRepository implements IRegionRepository  
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
+builder.Services.AddScoped<IWalkRepository, SQLWalkRespository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));  
 
