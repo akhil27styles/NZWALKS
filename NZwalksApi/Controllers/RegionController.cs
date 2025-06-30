@@ -5,6 +5,7 @@ using NZwalksApi.Data;
 using NZwalksApi.Models.Domain;
 using NZwalksApi.Models.DTO;
 using NZwalksApi.CustomActionFilters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NZwalksApi.Controllers
 {
@@ -12,6 +13,7 @@ namespace NZwalksApi.Controllers
     // http://localhost:1234/api/region
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionController : Controller
     {
         private readonly NZWalksDbContext dbContext;
