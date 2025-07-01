@@ -28,7 +28,7 @@ namespace NZwalksApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles= "Reader")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetAll()
         {
             var regionsDomain = await regionRepository.GetAllAsync();

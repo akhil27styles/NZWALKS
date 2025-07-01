@@ -2,7 +2,6 @@
 // Update the using directive for SQLRegionRepository to match the correct namespace.  
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -58,7 +57,7 @@ builder.Services.AddDbContext<NZWalksDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksConnectionString"));
 });
 
-builder.Services.AddDbContext<NZWalksAuthDbContext>(options =>
+builder.Services.AddDbContext<NZWalksAuthorizationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksAuthConnectionString"));
 });
@@ -74,7 +73,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("NZWALKS")
-    .AddEntityFrameworkStores<NZWalksAuthDbContext>()
+    .AddEntityFrameworkStores<NZWalksAuthorizationDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>

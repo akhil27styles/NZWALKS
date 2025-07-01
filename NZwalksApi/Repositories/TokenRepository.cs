@@ -17,13 +17,13 @@ namespace NZwalksApi.Repositories
 
         public string CreateJWTToken(IdentityUser user, List<string> roles)
         {
-            var claimes = new List<Claim>();
+            var claims = new List<Claim>();
 
-            claimes.Add(new Claim(ClaimTypes.Email, user.Email));
+            claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
             foreach (var role in roles)
             {
-                claimes.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
@@ -32,9 +32,9 @@ namespace NZwalksApi.Repositories
 
             var token = new JwtSecurityToken(
 
-                issuer: configuration["Jwt: Issuer"],
+                issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
-                claimes,
+                claims: claims,
                 expires: DateTime.Now.AddMinutes(15),
                 signingCredentials: creds);
 
