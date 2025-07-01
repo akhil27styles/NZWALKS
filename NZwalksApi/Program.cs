@@ -2,6 +2,7 @@
 // Update the using directive for SQLRegionRepository to match the correct namespace.  
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ using NZwalksApi.Data;
 using NZwalksApi.Mappings;
 using NZwalksApi.Repositories;
 using System.Text;
-using Microsoft.IdentityModel.
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.  
@@ -32,6 +33,8 @@ builder.Services.AddDbContext<NZWalksAuthDbContext>(options =>
 // Fix for CS0311: Ensure SQLRegionRepository implements IRegionRepository  
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SQLWalkRespository>();
+
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
@@ -56,14 +59,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            AuthenticationType = "Jwt",
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT:Audience"],
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudiences = new[] { builder.Configuration["Jwt:Audience"] },
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
 
@@ -81,7 +85,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.ueAuthentication();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
