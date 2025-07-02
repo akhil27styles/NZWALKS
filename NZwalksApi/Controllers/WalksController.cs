@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NZwalksApi.Models.Domain;
 using NZwalksApi.Models.DTO;
 using NZwalksApi.Repositories;
+using System.Net;
 
 namespace NZwalksApi.Controllers
 {
@@ -36,9 +37,11 @@ namespace NZwalksApi.Controllers
             [FromQuery] string? filterQuery , [FromQuery] string? sortBy, [FromQuery] bool? isAscending,
             [FromQuery] int pageNumber =1, [FromQuery] int pageSize = 1000)
         {
+            throw new Exception("This is a test exception to check error handling in the controller.");
             var walksDomain = await walkRepository.GetAllAsync(filterOn,filterQuery, sortBy, isAscending ?? true ,pageNumber , pageSize);
             var walksDto = mapper.Map<List<WalkDto>>(walksDomain);
             return Ok(walksDto);
+           
         }
 
         [HttpGet]

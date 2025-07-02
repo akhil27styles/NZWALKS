@@ -6,6 +6,7 @@ using NZwalksApi.Models.Domain;
 using NZwalksApi.Models.DTO;
 using NZwalksApi.CustomActionFilters;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
 
 namespace NZwalksApi.Controllers
 {
@@ -18,22 +19,40 @@ namespace NZwalksApi.Controllers
     {
         private readonly NZWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
-        private readonly IMapper mapper; 
+        private readonly IMapper mapper;
+        private readonly ILogger<RegionController> logger;
 
-        public RegionController(NZWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionController(NZWalksDbContext dbContext, 
+            IRegionRepository regionRepository, 
+            IMapper mapper,
+            ILogger<RegionController> logger)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionRepository;
-            this.mapper = mapper; 
+            this.mapper = mapper;
+            this.logger = logger;
         }
 
         [HttpGet]
         [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetAll()
         {
-            var regionsDomain = await regionRepository.GetAllAsync();
-            var regionsDto = mapper.Map<List<RegionDto>>(regionsDomain); 
-            return Ok(regionsDto);
+            try
+            {
+                logger.LogInformation("Getting all regions from the database");
+                var regionsDomain = await regionRepository.GetAllAsync();
+
+                //Return to DTO
+                logger.LogInformation($"Finished GetAllRegions request with data: {JsonSerializer.Serialize(regionsDomain)}");
+                var regionsDto = mapper.Map<List<RegionDto>>(regionsDomain);
+                return Ok(regionsDto);
+            }
+           
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while getting all regions");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [HttpGet]
