@@ -10,7 +10,6 @@ public class NZWalksDbContext :DbContext
         public DbSet<Walk> Walks { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Difficulty> Difficulties { get; set; }
-
         public DbSet<Image> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,7 +37,7 @@ public class NZWalksDbContext :DbContext
                 }
             };
 
-            // Seed difficulties to the database
+            //// Seed difficulties to the database
             modelBuilder.Entity<Difficulty>().HasData(difficulties);
 
 

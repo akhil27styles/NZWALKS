@@ -43,8 +43,9 @@ namespace NZwalksApi.Controllers
         private void ValidateFileUpload(ImageUploadRequestDto request)
         {
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            if (!allowedExtensions.Contains(Path.GetExtension(request.FileName).ToLower())){
-                ModelState.AddModelError("File", "Unsupported file extnesion");
+            var extension = Path.GetExtension(request.File.FileName).ToLower();
+            if (!allowedExtensions.Contains(extension)){
+                ModelState.AddModelError("File", "Unsupported file extension");
             }
 
             if (request.File.Length > 5 * 1024 * 1024) // 5 MB limit

@@ -1,6 +1,3 @@
-// Fix the namespace mismatch issue by ensuring the namespaces match between the interface and the implementation.  
-// Update the using directive for SQLRegionRepository to match the correct namespace.  
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -135,5 +132,4 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.MapControllers();
-
 app.Run();
