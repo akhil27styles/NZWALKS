@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -11,6 +12,8 @@ using NZwalksApi.Mappings;
 using NZwalksApi.Repositories;
 using Serilog;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using NZwalksApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +32,18 @@ builder.Services.AddControllers();
 builder.Services.AddApiVersioning(options=>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
 });
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+var versionDescriptionProvider = builder.Services.BuildServiceProvider()
+    .GetRequiredService<IApiVersionDescriptionProvider>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -105,11 +119,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 1;
 });
 
-builder.Services.AddExceptionHandler(options =>
-{
-    options.ExceptionHandlingPath = "/error";
-});
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -130,21 +139,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Uncomment the line below to use the in-memory repository instead of the SQL repository  
 //builder.Services.AddScoped<IRegionRepository, InMemoryRegionRepository>();  
 
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.  
 // Configure the HTTP request pipeline.  
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    // Add Swagger UI for each discovered API version
+    var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"NZ Walks API {description.GroupName.ToUpperInvariant()}");
+        }
+    });
 }
-
-
-
-
-app.UseHttpsRedirection();
-
 app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
