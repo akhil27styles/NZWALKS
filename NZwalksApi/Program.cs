@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using NZwalksApi.Middlewares;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -49,14 +50,17 @@ builder.Services.AddHttpContextAccessor();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle  
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "NZ Walks API",
-        Version = "v1",
-        Description = "API for managing NZ walks, regions, and difficulties."
-    });
+    //options.SwaggerDoc("v1", new OpenApiInfo
+    //{
+    //    Title = "NZ Walks API",
+    //    Version = "v1",
+    //    Description = "API for managing NZ walks, regions, and difficulties."
+    //});
+
+
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -158,7 +162,7 @@ if (app.Environment.IsDevelopment())
         }
     });
 }
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<NZwalksApi.Middlewares.ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
