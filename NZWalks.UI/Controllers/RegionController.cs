@@ -2,7 +2,6 @@
 using NZWalks.UI.Models;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NZWalks.UI.Controllers
 {
@@ -14,26 +13,23 @@ namespace NZWalks.UI.Controllers
         {
             this.httpClientFactory = httpClientFactory;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-
-            List<RegionDto> response = new List<RegionDto>();
+            var response = new List<RegionDto>();
             try
             {
                 var client = httpClientFactory.CreateClient();
-                var httpResponseMessage = await client.GetAsync("https://localhost:7167/api/region");
+                var httpResponse = await client.GetAsync("https://localhost:7167/api/region");
+                httpResponse.EnsureSuccessStatusCode();
 
-                httpResponseMessage.EnsureSuccessStatusCode();
-
-                response.AddRange(await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<RegionDto>>());
-
-
+                response.AddRange(await httpResponse.Content.ReadFromJsonAsync<IEnumerable<RegionDto>>());
             }
             catch (Exception ex)
             {
+                // Log error
 
-                //Log the exception (ex) here if needed
             }
 
             return View(response);
@@ -43,46 +39,39 @@ namespace NZWalks.UI.Controllers
         public IActionResult Add()
         {
             return View();
-
         }
+
         [HttpPost]
         public async Task<IActionResult> Add(AddRegionViewModel addRegionViewModel)
         {
             var client = httpClientFactory.CreateClient();
-            
-            var httpRequestMessage = new HttpRequestMessage()
+            var httpRequest = new HttpRequestMessage()
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri("https://localhost:7167/api/regions"),
-                Content = new StringContent(
-                    JsonSerializer.Serialize(addRegionViewModel),
-                    Encoding.UTF8,
-                    "application/json")
-                };
-            var httpResponseMessage = await client.SendAsync(httpRequestMessage);
-            httpResponseMessage.EnsureSuccessStatusCode();
+                RequestUri = new Uri("https://localhost:7167/api/region"),
+                Content = new StringContent(JsonSerializer.Serialize(addRegionViewModel), Encoding.UTF8, "application/json")
+            };
 
-            var response = await httpResponseMessage.Content.ReadFromJsonAsync<RegionDto>();
+            var httpResponse = await client.SendAsync(httpRequest);
+            httpResponse.EnsureSuccessStatusCode();
 
-            if(response is not null)
-            {
-                return RedirectToAction("Index" , "Regions");
-            }
+            var response = await httpResponse.Content.ReadFromJsonAsync<RegionDto>();
+
+            if (response is not null)
+                return RedirectToAction("Index", "Region");
+
             return View();
         }
 
         [HttpGet]
-
         public async Task<IActionResult> Edit(Guid id)
         {
-            ViewBag.Id = id;
             var client = httpClientFactory.CreateClient();
-            var response = await client.GetFromJsonAsync<RegionDto>($"https://localhost:7167/api/regions/{id.ToString()}");
-            
-            if (response is not null)
-            {
-                return View(response);
-            }
+            var region = await client.GetFromJsonAsync<RegionDto>($"https://localhost:7167/api/region/{id}");
+
+            if (region != null)
+                return View(region);
+
             return View(null);
         }
 
@@ -90,46 +79,41 @@ namespace NZWalks.UI.Controllers
         public async Task<IActionResult> Edit(RegionDto request)
         {
             var client = httpClientFactory.CreateClient();
-            var httpRequestMessage = new HttpRequestMessage()
+            var httpRequest = new HttpRequestMessage()
             {
                 Method = HttpMethod.Put,
-                RequestUri = new Uri($"https://localhost:7167/api/regions/{request.Id}"),
-                Content = new StringContent(
-                    JsonSerializer.Serialize(request),
-                    Encoding.UTF8,
-                    "application/json")
-            };
-            var httpResponseMessage =  await client.SendAsync(httpRequestMessage);
-            httpResponseMessage.EnsureSuccessStatusCode();
+                RequestUri = new Uri($"https://localhost:7167/api/region/{request.Id}"),
+                Content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json")
+            };  
 
-            var response = await httpResponseMessage.Content.ReadFromJsonAsync<RegionDto>();
+            var httpResponse = await client.SendAsync(httpRequest);
+            httpResponse.EnsureSuccessStatusCode();
+
+            var response = await httpResponse.Content.ReadFromJsonAsync<RegionDto>();
 
             if (response is not null)
-            {
-                return RedirectToAction("Index", "Regions");
-            }
+                return RedirectToAction("Index", "Region");
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(RegionDto request)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
+                var client = httpClientFactory.CreateClient();
+                var response = await client.DeleteAsync($"https://localhost:7167/api/region/{id}");
+                response.EnsureSuccessStatusCode();
 
-            var client = httpClientFactory.CreateClient();
-            var httpResponseMessage =  await client.DeleteAsync($"https://localhost:7167/api/regions/{request.Id}");
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            return RedirectToAction("Index", "Regions");
+                return RedirectToAction("Index", "Region");
             }
             catch (Exception ex)
             {
-                //Log the exception (ex) here if needed
+                // Log exception
             }
 
-            return View("Edit");
-
+            return RedirectToAction("Index", "Region");
         }
     }
 }

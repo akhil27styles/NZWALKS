@@ -57,7 +57,7 @@ namespace NZwalksApi.Controllers
 
         [HttpGet]
         [Route("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var regionDomain = await regionRepository.GetByIdAsync(id);
